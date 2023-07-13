@@ -1,11 +1,7 @@
 import gradio as gr
-from modules.openCV import capture
 
-capture = capture.Capture
+with gr.Blocks() as demo:
+    image = gr.Image(source = "webcam", streaming = True, live = True)
 
-capture.capture()
-#
-# with gr.Blocks() as demo:
-#     video = gr.Video("stream.mp4")
-#
-# demo.launch()
+
+demo.launch()
