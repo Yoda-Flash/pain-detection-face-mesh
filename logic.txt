@@ -1,0 +1,26 @@
+logic on pain detection:
+
+if inner_eyebrow_point.y > outer_eyebrow_point.y:
+    if top_of_eye.y - bottom_of_eye.y < 0.01 and/or mouth_corner > mouth_center:
+        pain = True
+
+elif
+
+    if top_of_Eye - bottom_of_eye < 0.01:
+        if inner_eyebrow_point > outer_eyebrow_point and/or mouth_corner > mouth_center:
+        pain = True
+
+elif
+
+    if mouth_corner > mouth_center:
+        if top_of_eye - bottom_of_eye < 0.01 and/or top_of_Eye - bottom_of_eye:
+        pain = True
+
+finding the angle between 3 points:
+import math
+ 
+def getAngle(a, b, c):
+    ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
+    return ang + 360 if ang < 0 else ang
+ 
+print(getAngle((5, 0), (0, 0), (0, 5)))
