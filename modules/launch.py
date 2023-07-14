@@ -27,11 +27,22 @@ def predict(frame):
 #   annotate_image = detector.draw_landmarks_on_image(frame, result)
 #   return annotate_image
 
+def change_layout(value):
+  if value == "Stream & Mesh":
+    return gr.update(visible=True)
+  elif value == "Stream only":
+    return gr.update(visible=False)
+
 with gr.Blocks(live=True) as demo:
-  with gr.Row():
-    cam = gr.Image(source="webcam", streaming=True)
-    output = gr.Image()
-    cam.stream(predict, cam, output, show_progress=False)
+  with gr.Column():
+    mode = gr.Dropdown(["Stream & Mesh", "Stream only"], interactive=True)
+    value = mode.value
+  with gr.Column():
+    with gr.Row():
+      cam = gr.Image(source="webcam", streaming=True)
+      output = gr.Image()
+      cam.stream(predict, cam, output, show_progress=False)
+  mode.change(change_layout, mode, output)
 #   # while (True):
 #   #      image = gr.Image(capturer.capture())
 #   #      print(image.shape)
