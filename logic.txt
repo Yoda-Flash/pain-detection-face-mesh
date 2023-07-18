@@ -4,7 +4,7 @@ result = detector.detect(img)
 result.face_landmarks[0][<mesh_id>].x
 result.face_landmarks[0][<mesh_id>].y
 
-y_inner_eyebrow_point = result.face_landmarks[0][<mesh_id>].y
+y_inner_left_eyebrow_point = result.face_landmarks[0][<mesh_id>].y
 
 comparing the y-values of specific points
 
