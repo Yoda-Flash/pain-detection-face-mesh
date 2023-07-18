@@ -38,13 +38,14 @@ def getResult(image):
 
 # print(face_landmarker_result)
 
-def draw_landmarks_on_image(rgb_image, detection_result):
+def draw_landmarks_on_image(rgb_image, detection_result, width, height):
   face_landmarks_list = detection_result.face_landmarks
   annotated_image = np.copy(rgb_image)
+  count = 0
+
   # Loop through the detected faces to visualize.
   for idx in range(len(face_landmarks_list)):
     face_landmarks = face_landmarks_list[idx]
-
     # Draw the face landmarks.
     face_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
     face_landmarks_proto.landmark.extend([
@@ -59,21 +60,33 @@ def draw_landmarks_on_image(rgb_image, detection_result):
       connection_drawing_spec=mp.solutions.drawing_styles
       .get_default_face_mesh_tesselation_style())
 
-    solutions.drawing_utils.draw_landmarks(
-      image=annotated_image,
-      landmark_list=face_landmarks_proto,
-      connections=mp.solutions.face_mesh.FACEMESH_CONTOURS,
-      landmark_drawing_spec=None,
-      connection_drawing_spec=mp.solutions.drawing_styles
-      .get_default_face_mesh_contours_style())
+    # Array of necessary points
+    points = [55, 24, 27, 23, 285, 353, 257, 53, 0, 61, 291]
 
-    solutions.drawing_utils.draw_landmarks(
-      image=annotated_image,
-      landmark_list=face_landmarks_proto,
-      connections=mp.solutions.face_mesh.FACEMESH_IRISES,
-      landmark_drawing_spec=None,
-      connection_drawing_spec=mp.solutions.drawing_styles
-      .get_default_face_mesh_iris_connections_style())
+    face = [[i.x, i.y] for i in face_landmarks]
+    for i in face:
+      if count in points:
+        print(count)
+        annotated_image = cv2.circle(annotated_image, [int(i[0] * height), int(i[1] * width)], 1, (255, 0, 0), 1)
+      count += 1
+      print(f'new {count}')
+
+
+    # solutions.drawing_utils.draw_landmarks(
+    #   image=annotated_image,
+    #   landmark_list=face_landmarks_proto,
+    #   connections=mp.solutions.face_mesh.FACEMESH_CONTOURS,
+    #   landmark_drawing_spec=None,
+    #   connection_drawing_spec=mp.solutions.drawing_styles
+    #   .get_default_face_mesh_contours_style())
+    #
+    # solutions.drawing_utils.draw_landmarks(
+    #   image=annotated_image,
+    #   landmark_list=face_landmarks_proto,
+    #   connections=mp.solutions.face_mesh.FACEMESH_IRISES,
+    #   landmark_drawing_spec=None,
+    #   connection_drawing_spec=mp.solutions.drawing_styles
+    #   .get_default_face_mesh_iris_connections_style())
   return annotated_image
 
 def plot_face_blendshapes_bar_graph(face_blendshapes):
