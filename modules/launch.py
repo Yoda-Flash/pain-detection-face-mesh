@@ -18,10 +18,12 @@ def predict(frame):
 #   # data = im.fromarray(frame)
 #   # data = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
   face_landmarker_result = detector.getResult(frame)
-  annotated_image = detector.draw_landmarks_on_image(frame, face_landmarker_result)
+  #annotated_image = detector.draw_landmarks_on_image(frame, face_landmarker_result)
+  black_frame = np.zeros_like(frame)
+  mesh_only = detector.draw_landmarks_on_image(black_frame, face_landmarker_result)
 #   # print(annotated_image.shape)
 #   # print(type(annotated_image))
-  return annotated_image
+  return mesh_only
   # return face_landmarker_result
 # def annotate(frame, result):
 #   annotate_image = detector.draw_landmarks_on_image(frame, result)
@@ -29,20 +31,37 @@ def predict(frame):
 
 def change_layout(value):
   if value == "Stream & Mesh":
-    return gr.update(visible=True)
-  elif value == "Stream only":
-    return gr.update(visible=False)
+    return cam.update(visible=True)
+  elif value == "Mesh only":
+    return cam.update(visible=False)
+  # elif value == "Mesh only":
 
-with gr.Blocks(live=True) as demo:
-  with gr.Column():
-    mode = gr.Dropdown(["Stream & Mesh", "Stream only"], interactive=True)
-    value = mode.value
-  with gr.Column():
+# def get_mesh_only(frame, result):
+#   img = np.zeros_like(fram)
+
+def capture(frame):
+  initial_result = detector.getResult(frame)
+  initial_annotated_image = detector.draw_landmarks_on_image(frame, initial_result)
+  return initial_annotated_image
+
+init_values = []
+
+with gr.Blocks() as demo:
+  with gr.Column() as img_block:
     with gr.Row():
-      cam = gr.Image(source="webcam", streaming=True)
+      snap = gr.Image(source="webcam", type="numpy", streaming=False, visible=False)
+      # init_values = snap.capture()
+      # print(init_values)
+      cam = gr.Image(source="webcam", streaming=True, visible=True)
       output = gr.Image()
+      # mesh = gr.Image()
       cam.stream(predict, cam, output, show_progress=False)
-  mode.change(change_layout, mode, output)
+  with gr.Column():
+    mode = gr.Dropdown(["Stream & Mesh", "Mesh only"], interactive=True)
+    value = mode.value
+  mode.change(change_layout, mode, cam)
+  snap.change(capture, snap, init_values)
+
 #   # while (True):
 #   #      image = gr.Image(capturer.capture())
 #   #      print(image.shape)
@@ -74,3 +93,6 @@ with gr.Blocks(live=True) as demo:
 #                     outputs=[img_output], live=True)
 
 demo.launch()
+
+def get_init_coord():
+  return init_values
