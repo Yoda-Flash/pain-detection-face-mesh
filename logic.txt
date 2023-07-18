@@ -1,26 +1,44 @@
 logic on pain detection:
 
-if inner_eyebrow_point.y > outer_eyebrow_point.y:
-    if top_of_eye.y - bottom_of_eye.y < 0.01 and/or mouth_corner > mouth_center:
-        pain = True
+result = detector.detect(img)
+result.face_landmarks[0][<mesh_id>].x
+result.face_landmarks[0][<mesh_id>].y
+
+y_inner_eyebrow_point = result.face_landmarks[0][<mesh_id>].y
+
+
+if y_inner_left_eyebrow_point > y_outer_left_eyebrow_point and y_inner_right_eyebrow_point > y_outer_right_eyebrow_point:
+    if y_top_of_left_eye - y_bottom_of_left_eye < 0.01 and y_top_of_right_eye - y_bottom_of_right_eye < 0.01 and/or mouth_corner > mouth_center:
+            pain = True
 
 elif
 
-    if top_of_Eye - bottom_of_eye < 0.01:
-        if inner_eyebrow_point > outer_eyebrow_point and/or mouth_corner > mouth_center:
-        pain = True
+    if y_top_of_eye - y_bottom_of_eye < 0.01:
+        if y_inner_eyebrow_point > y_outer_eyebrow_point and/or mouth_corner > mouth_center:
+            pain = True
 
 elif
 
     if mouth_corner > mouth_center:
-        if top_of_eye - bottom_of_eye < 0.01 and/or top_of_Eye - bottom_of_eye:
-        pain = True
+        if y_top_of_eye - y_bottom_of_eye < 0.01 and/or y_inner_eyebrow_point > y_outer_eyebrow_point:
+            pain = True
 
-finding the angle between 3 points:
-import math
- 
-def getAngle(a, b, c):
-    ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
-    return ang + 360 if ang < 0 else ang
- 
-print(getAngle((5, 0), (0, 0), (0, 5)))
+comparing snapshots
+
+y_inner_eyebrow_point_old = result.face_landmarks[0][<mesh_id>].y
+y_inner_eyebrow_point_new = result.face_landmarks[0][<mesh_id>].y
+
+if y_inner_eyebrow_point_old > y_inner_eyebrow_point_new:
+    y_top_of_eye
+
+Inner left eyebrow: 55
+outer left eyebrow:24, 
+top of left eye: 27
+bottom of left eye: 23
+inner right eyebrow: 285
+outer right eyebrow:353
+top of right eye: 257
+bottom of right eye:53
+top of mouth: 0
+left mouth corner:61
+right mouth corner:291
