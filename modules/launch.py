@@ -14,13 +14,16 @@ from mediapipe.tasks.python.vision import FaceLandmarkerResult, FaceLandmarker
 from modules.openCV import detector
 from modules.openCV.capture import Capture
 #
+
 def predict(frame):
+  width = frame.shape[0]
+  height = frame.shape[1]
 #   # data = im.fromarray(frame)
 #   # data = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
   face_landmarker_result = detector.getResult(frame)
   #annotated_image = detector.draw_landmarks_on_image(frame, face_landmarker_result)
   black_frame = np.zeros_like(frame)
-  mesh_only = detector.draw_landmarks_on_image(black_frame, face_landmarker_result)
+  mesh_only = detector.draw_landmarks_on_image(black_frame, face_landmarker_result, width, height)
 #   # print(annotated_image.shape)
 #   # print(type(annotated_image))
   return mesh_only
