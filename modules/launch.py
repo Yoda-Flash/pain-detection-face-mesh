@@ -1,26 +1,21 @@
 import gradio as gr
-import cv2
-from PIL import Image as im
-import mediapipe as mp
-from mediapipe import ImageFormat
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
-from mediapipe import solutions
-from mediapipe.framework.formats import landmark_pb2
+import redis
 import numpy as np
-import matplotlib.pyplot as plt
-from mediapipe.tasks.python.vision import FaceLandmarkerResult, FaceLandmarker
-
 from modules.openCV import detector
-from modules.openCV.capture import Capture
-#
+import pickle
+
+r = redis.Redis(host='localhost', port=6379, db=0)
 
 def predict(frame):
+  global width, height
   width = frame.shape[0]
   height = frame.shape[1]
 #   # data = im.fromarray(frame)
 #   # data = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
   face_landmarker_result = detector.getResult(frame)
+  # byte_result = bytearray(face_landmarker_result)
+  result = pickle.dumps(face_landmarker_result.face_landmarks)
+  r.set('current_result', result)
   #annotated_image = detector.draw_landmarks_on_image(frame, face_landmarker_result)
   black_frame = np.zeros_like(frame)
   mesh_only = detector.draw_landmarks_on_image(black_frame, face_landmarker_result, width, height)
@@ -39,20 +34,18 @@ def change_layout(value):
     return cam.update(visible=False)
   # elif value == "Mesh only":
 
-# def get_mesh_only(frame, result):
-#   img = np.zeros_like(fram)
-
 def capture(frame):
   initial_result = detector.getResult(frame)
-  initial_annotated_image = detector.draw_landmarks_on_image(frame, initial_result)
-  return initial_annotated_image
+  # byte_init_result = bytearray(initial_result)
+  results = pickle.dumps(initial_result.face_landmarks)
+  r.set('first_result', results)
 
-init_values = []
+  # initial_annotated_image = detector.draw_landmarks_on_image(frame, initial_result, width, height)
+  return initial_result
 
 with gr.Blocks() as demo:
   with gr.Column() as img_block:
     with gr.Row():
-      snap = gr.Image(source="webcam", type="numpy", streaming=False, visible=False)
       # init_values = snap.capture()
       # print(init_values)
       cam = gr.Image(source="webcam", streaming=True, visible=True)
@@ -61,9 +54,11 @@ with gr.Blocks() as demo:
       cam.stream(predict, cam, output, show_progress=False)
   with gr.Column():
     mode = gr.Dropdown(["Stream & Mesh", "Mesh only"], interactive=True)
-    value = mode.value
+    snap = gr.Button("Press to take initial photo of relaxed face for a benchmark")
+    init_values = gr.Textbox(visible=False)
+    snap.click(capture, cam, init_values)
   mode.change(change_layout, mode, cam)
-  snap.change(capture, snap, init_values)
+
 
 #   # while (True):
 #   #      image = gr.Image(capturer.capture())
@@ -96,6 +91,3 @@ with gr.Blocks() as demo:
 #                     outputs=[img_output], live=True)
 
 demo.launch()
-
-def get_init_coord():
-  return init_values
