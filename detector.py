@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import cv2
 import time
 
-modelPath = "./face_landmarker.task"
+modelPath = "modules/face_landmarker.task"
 # img_path = "opencv_frame_0.png"
 # cv2_image = cv2.imread(img_path)
 
@@ -38,7 +38,7 @@ def getResult(image):
 
 # print(face_landmarker_result)
 
-def draw_landmarks_on_image(rgb_image, detection_result, width, height):
+def draw_landmarks_on_image(rgb_image, detection_result, width, height, id):
   face_landmarks_list = detection_result.face_landmarks
   annotated_image = np.copy(rgb_image)
   count = 0
@@ -66,7 +66,12 @@ def draw_landmarks_on_image(rgb_image, detection_result, width, height):
     face = [[i.x, i.y] for i in face_landmarks]
     for i in face:
       if count in points:
-        annotated_image = cv2.circle(annotated_image, [int(i[0] * height), int(i[1] * width)], 1, (0, 255, 0), 1)
+        print(f'i: {i[1]}')
+        print(f'id: {id}')
+        annotated_image = cv2.circle(annotated_image, [int(i[0] * height), int(i[1] * width)], 3, (0, 255, 0), 1)
+        if id is not None:
+          if i[1] in id:
+            annotated_image = cv2.circle(annotated_image, [int(i[0] * height), int(i[1] * width)], 3, (255, 0, 0), 1)
       count += 1
 
     # solutions.drawing_utils.draw_landmarks(
