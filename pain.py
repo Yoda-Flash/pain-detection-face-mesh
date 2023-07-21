@@ -35,6 +35,12 @@ y_mouth_corner_right_new = init[0][291].y
 y_mouth_corner_left_old = init[0][61].y
 y_mouth_corner_right_old = init[0][291].y
 
+def current(id):
+  return current[0][id].y
+
+def init(id):
+  return init[0][id].y
+
 if y_inner_left_eyebrow_point < y_outer_left_eyebrow_point \
     or y_inner_right_eyebrow_point < y_outer_right_eyebrow_point:
     if y_top_of_left_eye - y_bottom_of_left_eye < 0.1 \

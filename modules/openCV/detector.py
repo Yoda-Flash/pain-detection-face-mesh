@@ -66,7 +66,7 @@ def draw_landmarks_on_image(rgb_image, detection_result, width, height):
     face = [[i.x, i.y] for i in face_landmarks]
     for i in face:
       if count in points:
-        annotated_image = cv2.circle(annotated_image, [int(i[0] * height), int(i[1] * width)], 1, (255, 0, 0), 1)
+        annotated_image = cv2.circle(annotated_image, [int(i[0] * height), int(i[1] * width)], 1, (0, 255, 0), 1)
       count += 1
 
     # solutions.drawing_utils.draw_landmarks(

@@ -11,7 +11,7 @@ services:
   gradio:
     build:
       context: .
-      dockerfile: modules/Dockerfile
+      dockerfile: Dockerfile
 #    image: python:3.11.4-slim
     restart: always
     ports:
