@@ -1,10 +1,11 @@
 import redis
 import pickle
+from config import REDIS_HOST
 
 class Pain:
     # pain = r.set("pain", "False")
     def __init__(self):
-        self.redis_client = redis.Redis(host='redis', port=6379, db=0)
+        self.redis_client = redis.Redis(host=REDIS_HOST, port=6379, db=0)
         self.target = [{
             "target": 55,
             "condition": ">"
@@ -53,6 +54,7 @@ class Pain:
                     id.append(self.current(x.get("target"), current))
         if counter >= 2:
             return id
+        
         # if self.initial(55) > self.current(55, current) or self.initial(285) > self.current(285, current):
         #     counter += 1
         #     id.append(self.current(55, current))

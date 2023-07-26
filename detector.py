@@ -27,6 +27,7 @@ options = faceLandmarkerOptions(
   running_mode=visionRunningMode.IMAGE)
 
 detector = vision.FaceLandmarker.create_from_options(options)
+
 def getResult(image):
   # with faceLandmarker.create_from_options(options) as landmarker:
   frame = mp.Image(image_format=ImageFormat.SRGB, data=image)

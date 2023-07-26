@@ -1,38 +1,46 @@
 import gradio as gr
 import redis
 import numpy as np
-from detector import detector
+from detector import detector, getResult, draw_landmarks_on_image
 import pickle
 from pain import Pain
+from config import REDIS_HOST
 
-r = redis.Redis(host='redis', port=6379, db=0)
+r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
+
 pain_detection = Pain()
 def init(value):
   # print(f"value: {value}")
   value = 1
   return value
+
 def predict(num, frame):
-  print(num, type(frame), frame.shape, flush=True)
-  if num == 1:
-    global width, height
-    width = frame.shape[0]
-    height = frame.shape[1]
-  #   # data = im.fromarray(frame)
-  #   # data = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    face_landmarker_result = detector.getResult(frame)
-    print(face_landmarker_result.face_landmarks)
-    # byte_result = bytearray(face_landmarker_result)
-    # result = pickle.dumps(face_landmarker_result.face_landmarks)
-    # r.set('current_result', result)
-    #annotated_image = detector.draw_landmarks_on_image(frame, face_landmarker_result)
-    black_frame = np.zeros_like(frame)
-    pain_result = pain_detection.detection(face_landmarker_result.face_landmarks)
-    mesh_only = detector.draw_landmarks_on_image(black_frame, face_landmarker_result, width, height, pain_result)
-  #   # print(annotated_image.shape)
-  #   # print(type(annotated_image))
-    return mesh_only
-  else:
-    return None
+  try:
+    # print(num, type(frame), frame.shape, flush=True)
+    if num == 1:
+      global width, height
+      width = frame.shape[0]
+      height = frame.shape[1]
+    #   # data = im.fromarray(frame)
+    #   # data = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+      face_landmarker_result = getResult(frame)
+      print(face_landmarker_result.face_landmarks)
+      # byte_result = bytearray(face_landmarker_result)
+      # result = pickle.dumps(face_landmarker_result.face_landmarks)
+      # r.set('current_result', result)
+      #annotated_image = detector.draw_landmarks_on_image(frame, face_landmarker_result)
+      black_frame = np.zeros_like(frame)
+      pain_result = pain_detection.detection(face_landmarker_result.face_landmarks)
+      mesh_only = draw_landmarks_on_image(black_frame, face_landmarker_result, width, height, pain_result)
+    #   # print(annotated_image.shape)
+    #   # print(type(annotated_image))
+      return mesh_only
+    return
+  except Exception as e:
+    print(e)
+    raise gr.Error(e)
+  # else:
+  #   return None
       # return face_landmarker_result
     # def annotate(frame, result):
     #   annotate_image = detector.draw_landmarks_on_image(frame, result)
@@ -46,7 +54,7 @@ def change_layout(value):
   # elif value == "Mesh only":
 
 def capture(frame):
-  initial_result = detector.getResult(frame)
+  initial_result = getResult(frame)
   # byte_init_result = bytearray(initial_result)
   results = pickle.dumps(initial_result.face_landmarks)
   r.set('first_result', results)
@@ -63,15 +71,15 @@ with gr.Blocks() as demo:
       # mesh = gr.Image()
       #cam.stream(predict, cam, output, show_progress=False)
   with gr.Column():
-    mode = gr.Dropdown(["Stream & Mesh", "Mesh only"], interactive=True)
+    mode = gr.Dropdown(["Stream & Mesh", "Mesh only"], interactive=True, type="value")
     snap = gr.Button("Press to take initial photo of relaxed face for a benchmark")
     start = gr.Button("Press to start operation")
     init_values = gr.Textbox(visible=False)
     num = gr.Number(visible=False, value=0)
-    print(num.value)
+    print(f"Num: {num.value}")
+    cam.stream(predict, inputs=[num, cam], outputs=[output], show_progress=False, api_name="stream")
     snap.click(capture, cam, init_values)
     start.click(init, num, num)
-    cam.stream(predict, [num, cam], output, show_progress=False)
     # start.click(cam.stream(predict, cam, output, show_progress=False))
   mode.change(change_layout, mode, cam)
 
