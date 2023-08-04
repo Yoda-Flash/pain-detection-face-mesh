@@ -32,7 +32,7 @@ def getResult(image):
   # with faceLandmarker.create_from_options(options) as landmarker:
   frame = mp.Image(image_format=ImageFormat.SRGB, data=image)
   result = detector.detect(frame)
-  # print(result)
+  print(result, flush=True)
   return result
 
 
@@ -62,7 +62,7 @@ def draw_landmarks_on_image(rgb_image, detection_result, width, height, id):
       .get_default_face_mesh_tesselation_style())
 
     # Array of necessary points
-    points = [55, 24, 27, 23, 285, 353, 257, 53, 0, 61, 291]
+    points = [353, 285, 55, 124, 61, 291]
 
     face = [[i.x, i.y] for i in face_landmarks]
     for i in face:

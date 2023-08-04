@@ -3,7 +3,7 @@ import redis
 import numpy as np
 from detector import detector, getResult, draw_landmarks_on_image
 import pickle
-from pain import Pain
+from athena import Pain
 from config import REDIS_HOST
 
 r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
@@ -16,7 +16,6 @@ def init(value):
 
 def predict(num, frame):
   try:
-    # print(num, type(frame), frame.shape, flush=True)
     if num == 1:
       global width, height
       width = frame.shape[0]
@@ -24,7 +23,7 @@ def predict(num, frame):
     #   # data = im.fromarray(frame)
     #   # data = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
       face_landmarker_result = getResult(frame)
-      print(face_landmarker_result.face_landmarks)
+      # print(face_landmarker_result.face_landmarks)
       # byte_result = bytearray(face_landmarker_result)
       # result = pickle.dumps(face_landmarker_result.face_landmarks)
       # r.set('current_result', result)
@@ -54,12 +53,16 @@ def change_layout(value):
   # elif value == "Mesh only":
 
 def capture(frame):
-  initial_result = getResult(frame)
-  # byte_init_result = bytearray(initial_result)
-  results = pickle.dumps(initial_result.face_landmarks)
-  r.set('first_result', results)
-  #initial_annotated_image = detector.draw_landmarks_on_image(frame, initial_result, width, height, null)
-  return initial_result
+  try:
+    initial_result = getResult(frame)
+    # byte_init_result = bytearray(initial_result)
+    results = pickle.dumps(initial_result.face_landmarks)
+    r.set('first_result', results)
+    #initial_annotated_image = detector.draw_landmarks_on_image(frame, initial_result, width, height, null)
+    return initial_result
+  except Exception as e:
+    print(e)
+    raise gr.Error(e)
 
 with gr.Blocks() as demo:
   with gr.Column() as img_block:
@@ -77,9 +80,9 @@ with gr.Blocks() as demo:
     init_values = gr.Textbox(visible=False)
     num = gr.Number(visible=False, value=0)
     print(f"Num: {num.value}")
-    cam.stream(predict, inputs=[num, cam], outputs=[output], show_progress=False, api_name="stream")
-    snap.click(capture, cam, init_values)
-    start.click(init, num, num)
+    cam.stream(predict, inputs=[num, cam], outputs=[output], show_progress=False)
+    snap.click(capture, inputs=cam, outputs=init_values)
+    start.click(init, inputs=num, outputs=num)
     # start.click(cam.stream(predict, cam, output, show_progress=False))
   mode.change(change_layout, mode, cam)
 
