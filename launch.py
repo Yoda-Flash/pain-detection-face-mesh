@@ -3,7 +3,7 @@ import redis
 import numpy as np
 from detector import detector, getResult, draw_landmarks_on_image
 import pickle
-from athena import Pain
+from yoda import Pain
 from config import REDIS_HOST
 
 r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
