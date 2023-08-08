@@ -32,7 +32,7 @@ def getResult(image):
   # with faceLandmarker.create_from_options(options) as landmarker:
   frame = mp.Image(image_format=ImageFormat.SRGB, data=image)
   result = detector.detect(frame)
-  print(result, flush=True)
+  # print(result, flush=True)
   return result
 
 
