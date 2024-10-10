@@ -29,7 +29,7 @@ def predict(num, frame):
       # r.set('current_result', result)
       #annotated_image = detector.draw_landmarks_on_image(frame, face_landmarker_result)
       black_frame = np.zeros_like(frame)
-      pain_result = pain_detection.detection(face_landmarker_result.face_landmarks)
+      pain_result = pain_detection.detection(face_landmarker_result.face_landmarks[0])
       mesh_only = draw_landmarks_on_image(black_frame, face_landmarker_result, width, height, pain_result)
     #   # print(annotated_image.shape)
     #   # print(type(annotated_image))
